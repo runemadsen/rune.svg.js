@@ -1,0 +1,41 @@
+{
+  "name": "rune.svg.js",
+  "version": "0.0.1",
+  "description": "Plugin for Rune.js that parses SVG files into a Rune.Group.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/runemadsen/rune.svg.js"
+  },
+  "main": "src/svg.js",
+  "author": "runemadsen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/runemadsen/rune.svg.js/issues"
+  },
+  "homepage": "http://runemadsen.github.io/rune.js/",
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
+    "rune.js": "^0.2.3"
+  },
+  "keywords": [
+    "rune.js"
+  ],
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "browserify": "^11.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-buffer": "^1.0.0",
+    "gulp-jasmine": "^2.1.0",
+    "gulp-jasmine-browser": "^0.2.3",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.4.0",
+    "lodash.assign": "^3.2.0",
+    "gulp-concat": "^2.6.0",
+    "browserify-shim": "^3.8.10",
+    "underscore": "^1.7.0",
+    "gulp-connect": "^2.2.0"
+  },
+  "browserify-shim": {
+    "rune.js": "global:Rune"
+  }
+}
