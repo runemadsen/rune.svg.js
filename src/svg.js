@@ -1,7 +1,20 @@
 var Rune = require("rune.js");
 var isomorphicLoad = require('./load');
 
-var SVG = function(url) {
+// The xmldoc package makes it hard to stub the external because
+// it is required as .DOMParser, so we do this instead to make it
+// work in both node and browser (without the lib).
+var IsomorphicDOMParser;
+var xmldom = require('xmldom');
+if(xmldom.DOMParser) {
+  IsomorphicDOMParser = xmldom.DOMParser;
+}
+else {
+  IsomorphicDOMParser = DOMParser;
+}
+
+var Svg = function(url) {
+  console.log(DOMParser);
   if(url.match(/\<svg/)) {
     this.svg = url;
   } else {
@@ -9,7 +22,7 @@ var SVG = function(url) {
   }
 }
 
-SVG.prototype = {
+Svg.prototype = {
 
   load: function(cb) {
     var that = this;
@@ -26,7 +39,6 @@ SVG.prototype = {
     // DO A BUNCH OF THINGS
 
   }
-
 }
 
-module.exports = SVG;
+module.exports = Svg;
