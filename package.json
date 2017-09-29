@@ -14,9 +14,12 @@
   },
   "homepage": "http://runemadsen.github.io/rune.js/",
   "dependencies": {
+    "d-path-parser": "^1.0.0",
     "isomorphic-fetch": "^2.2.1",
     "rune.js": "^1.1.2",
     "xmldom": "^0.1.27"
   },
-  "keywords": ["rune.js"]
+  "keywords": [
+    "rune.js"
+  ]
 }

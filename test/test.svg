@@ -3,13 +3,13 @@
   <rect x="1" y="2" width="3" height="4" rx="5" ry="6" transform="translate(7 8) rotate(9 10 11)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
   <ellipse cx="1" cy="2" rx="3" ry="4" transform="translate(5 6) rotate(7, 8,9)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
   <circle cx="1.1" cy="2.2" r="3.3" transform="rotate(4,5,6),translate(7,8)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
-  <line x1="1" y1="2" x2="3" y2="4" transform="rotate(5,6,7),translate(7,8)" stroke="#FF0000" fill="rgb(255, 0, 0)" stroke-width="9" />
+  <line x1="1" y1="2" x2="3" y2="4" transform="rotate(5,6,7),translate(7,8)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
+  <polygon points="200,10 250 190 160,210" transform="rotate(1 2 3) translate(4 5)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
+  <path d="M1,2 m1,2 L 3 4 l 3 4 Q 5 6, 7 8 q 5 6 7 8 C 5 6, 7 8, 9 10 c 5 6, 7 8, 9 10 Z" transform="rotate(1 2 3) translate(4 5)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
+
 </svg>
 
-<!-- // if circle
-// line
+<!-- ALL THE SHAPE AND STYLE ATTRIBUTES ON EVERYTHING!
 // path
-// polygon
 // group
-// rectangle
 // text -->

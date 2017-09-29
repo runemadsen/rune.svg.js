@@ -85,6 +85,45 @@ describe("Rune.SVG", function() {
         expect(line.state.rotationY).toEqual(7);
         expect(line.state.stroke).toEqual(new Rune.Color(255, 0, 0));
         expect(line.state.fill).toEqual(new Rune.Color(255, 0, 0));
+
+        // Polygon
+        var polygon = group.children[4];
+        expect(polygon.type).toEqual("polygon");
+        expect(polygon.state.x).toEqual(4);
+        expect(polygon.state.y).toEqual(5);
+        expect(polygon.state.rotation).toEqual(1);
+        expect(polygon.state.rotationX).toEqual(2);
+        expect(polygon.state.rotationY).toEqual(3);
+        expect(polygon.state.stroke).toEqual(new Rune.Color(255, 0, 0));
+        expect(polygon.state.fill).toEqual(new Rune.Color(255, 0, 0));
+        expect(polygon.state.vectors).toEqual([
+          new Rune.Vector(200, 10),
+          new Rune.Vector(250, 190),
+          new Rune.Vector(160, 210)
+        ]);
+
+        // Path
+        var path = group.children[5];
+        expect(path.type).toEqual("path");
+        expect(path.state.x).toEqual(4);
+        expect(path.state.y).toEqual(5);
+        expect(path.state.rotation).toEqual(1);
+        expect(path.state.rotationX).toEqual(2);
+        expect(path.state.rotationY).toEqual(3);
+        expect(path.state.stroke).toEqual(new Rune.Color(255, 0, 0));
+        expect(path.state.fill).toEqual(new Rune.Color(255, 0, 0));
+        expect(path.state.anchors).toEqual([
+          new Rune.Anchor().setMove(1, 2),
+          new Rune.Anchor().setMove(2, 4), // relative
+          new Rune.Anchor().setLine(3, 4),
+          new Rune.Anchor().setLine(6, 8), // relative
+          new Rune.Anchor().setCurve(5, 6, 7, 8),
+          new Rune.Anchor().setCurve(12, 14, 14, 16), // relative
+          new Rune.Anchor().setCurve(5, 6, 7, 8, 9, 10),
+          new Rune.Anchor().setCurve(14, 16, 16, 18, 18, 20), // relative
+          new Rune.Anchor().setClose()
+        ]);
+
         done();
       });
     });
