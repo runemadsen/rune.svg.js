@@ -7,6 +7,7 @@
   <polygon points="200,10 250 190 160,210" transform="rotate(1 2 3) translate(4 5)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
   <path d="M1,2 m1,2 L 3 4 l 3 4 Q 5 6, 7 8 q 5 6 7 8 C 5 6, 7 8, 9 10 c 5 6, 7 8, 9 10 Z" transform="rotate(1 2 3) translate(4 5)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
   <text x="1" y="2" transform="rotate(3 4 5) translate(6 7)" stroke="#FF0000" fill="rgb(255, 0, 0)" text-align="left" font-family="Helvetica" font-style="italic" font-weight="bold" font-size="12" letter-spacing="0.5" text-decoration="none">Rune</text>
+  <image x="1" y="2" width="3" height="4" href="one.jpg" xlink:href="two.jpg" transform="rotate(3 4 5) translate(6 7)" />
 
 </svg>
 

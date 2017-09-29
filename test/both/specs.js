@@ -143,6 +143,16 @@ describe('Rune.SVG', function() {
         expect(text.state.letterSpacing).toEqual(0.5);
         expect(text.state.textDecoration).toEqual('none');
 
+        // Image
+        var image = group.children[7];
+        expect(image.type).toEqual('image');
+        expect(image.state.x).toEqual(1);
+        expect(image.state.y).toEqual(2);
+        expect(image.state.rotation).toEqual(3);
+        expect(image.state.rotationX).toEqual(4);
+        expect(image.state.rotationY).toEqual(5);
+        expect(image.state.url).toEqual('two.jpg');
+
         done();
       });
     });

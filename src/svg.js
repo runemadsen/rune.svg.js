@@ -177,6 +177,17 @@ function domChildrenToGroupChildren(group, childNodes) {
       });
       s.state.text = child.childNodes[0].nodeValue;
       group.add(s);
+    } else if (child.tagName == 'image') {
+      var s = fillShape(new Rune.Image(), child, {
+        x: 'x',
+        y: 'y',
+        width: 'width',
+        height: 'height',
+        transform: ['rotation']
+      });
+      s.state.url =
+        child.getAttribute('xlink:href') || child.getAttribute('href') || null;
+      group.add(s);
     }
   }
 }
