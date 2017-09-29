@@ -1,23 +1,23 @@
-describe("Rune.SVG", function() {
-  var testFile = "test/test.svg";
-  var tigerFile = "test/tiger.svg";
+describe('Rune.SVG', function() {
+  var testFile = 'test/test.svg';
+  var tigerFile = 'test/tiger.svg';
 
-  describe("constructor", function() {
-    it("should set svg", function() {
-      var svg = new Rune.Svg("<svg></svg>");
+  describe('constructor', function() {
+    it('should set svg', function() {
+      var svg = new Rune.Svg('<svg></svg>');
       expect(svg.url).toBeUndefined();
-      expect(svg.svg).toEqual("<svg></svg>");
+      expect(svg.svg).toEqual('<svg></svg>');
     });
 
-    it("should set url", function() {
+    it('should set url', function() {
       var svg = new Rune.Svg(testFile);
       expect(svg.url).toEqual(testFile);
       expect(svg.svg).toBeUndefined();
     });
   });
 
-  describe("load()", function() {
-    it("should load the SVG", function(done) {
+  describe('load()', function() {
+    it('should load the SVG', function(done) {
       var svg = new Rune.Svg(testFile);
       svg.load(function(err) {
         expect(err).toBeNull();
@@ -27,15 +27,15 @@ describe("Rune.SVG", function() {
     });
   });
 
-  describe("toGroup()", function() {
-    fit("should parse the SVG and return a Rune.Group", function(done) {
+  describe('toGroup()', function() {
+    fit('should parse the SVG and return a Rune.Group', function(done) {
       var svg = new Rune.Svg(testFile);
       svg.load(function(err) {
         var group = svg.toGroup();
 
         // Rect
         var rect = group.children[0];
-        expect(rect.type).toEqual("rectangle");
+        expect(rect.type).toEqual('rectangle');
         expect(rect.state.x).toEqual(1);
         expect(rect.state.y).toEqual(2);
         expect(rect.state.width).toEqual(3);
@@ -50,7 +50,7 @@ describe("Rune.SVG", function() {
 
         // Ellipse
         var ellipse = group.children[1];
-        expect(ellipse.type).toEqual("ellipse");
+        expect(ellipse.type).toEqual('ellipse');
         expect(ellipse.state.x).toEqual(1);
         expect(ellipse.state.y).toEqual(2);
         expect(ellipse.state.rx).toEqual(3);
@@ -63,7 +63,7 @@ describe("Rune.SVG", function() {
 
         // Circle
         var circle = group.children[2];
-        expect(circle.type).toEqual("circle");
+        expect(circle.type).toEqual('circle');
         expect(circle.state.x).toEqual(1.1);
         expect(circle.state.y).toEqual(2.2);
         expect(circle.state.radius).toEqual(3.3);
@@ -75,7 +75,7 @@ describe("Rune.SVG", function() {
 
         // Line
         var line = group.children[3];
-        expect(line.type).toEqual("line");
+        expect(line.type).toEqual('line');
         expect(line.state.x).toEqual(1);
         expect(line.state.y).toEqual(2);
         expect(line.state.x2).toEqual(3);
@@ -88,7 +88,7 @@ describe("Rune.SVG", function() {
 
         // Polygon
         var polygon = group.children[4];
-        expect(polygon.type).toEqual("polygon");
+        expect(polygon.type).toEqual('polygon');
         expect(polygon.state.x).toEqual(4);
         expect(polygon.state.y).toEqual(5);
         expect(polygon.state.rotation).toEqual(1);
@@ -104,7 +104,7 @@ describe("Rune.SVG", function() {
 
         // Path
         var path = group.children[5];
-        expect(path.type).toEqual("path");
+        expect(path.type).toEqual('path');
         expect(path.state.x).toEqual(4);
         expect(path.state.y).toEqual(5);
         expect(path.state.rotation).toEqual(1);
@@ -123,6 +123,25 @@ describe("Rune.SVG", function() {
           new Rune.Anchor().setCurve(14, 16, 16, 18, 18, 20), // relative
           new Rune.Anchor().setClose()
         ]);
+
+        // Text
+        var text = group.children[6];
+        expect(text.type).toEqual('text');
+        expect(text.state.text).toEqual('Rune');
+        expect(text.state.x).toEqual(1);
+        expect(text.state.y).toEqual(2);
+        expect(text.state.rotation).toEqual(3);
+        expect(text.state.rotationX).toEqual(4);
+        expect(text.state.rotationY).toEqual(5);
+        expect(text.state.stroke).toEqual(new Rune.Color(255, 0, 0));
+        expect(text.state.fill).toEqual(new Rune.Color(255, 0, 0));
+        expect(text.state.textAlign).toEqual('left');
+        expect(text.state.fontFamily).toEqual('Helvetica');
+        expect(text.state.fontStyle).toEqual('italic');
+        expect(text.state.fontWeight).toEqual('bold');
+        expect(text.state.fontSize).toEqual(12);
+        expect(text.state.letterSpacing).toEqual(0.5);
+        expect(text.state.textDecoration).toEqual('none');
 
         done();
       });

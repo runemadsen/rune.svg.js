@@ -102,7 +102,7 @@ function domChildrenToGroupChildren(group, childNodes) {
         stroke: 'stroke',
         fill: 'fill'
       });
-      var points = parsePolygonPointsString(child.getAttribute('points'));
+      var points = polygonParser(child.getAttribute('points'));
       for (var j = 0; j < points.length; j += 2) {
         s.state.vectors.push(new Rune.Vector(points[j], points[j + 1]));
       }
@@ -158,15 +158,30 @@ function domChildrenToGroupChildren(group, childNodes) {
         } else if (p.code === 'Z' || p.code === 'z') {
           s.state.anchors.push(new Rune.Anchor().setClose());
         }
-
-        //
+        group.add(s);
       }
+    } else if (child.tagName == 'text') {
+      var s = fillShape(new Rune.Text(), child, {
+        x: 'x',
+        y: 'y',
+        stroke: 'stroke',
+        fill: 'fill',
+        'text-align': 'textAlign',
+        'font-family': 'fontFamily',
+        'font-style': 'fontStyle',
+        'font-weight': 'fontWeight',
+        'font-size': 'fontSize',
+        'letter-spacing': 'letterSpacing',
+        'text-decoration': 'textDecoration',
+        transform: ['rotation']
+      });
+      s.state.text = child.childNodes[0].nodeValue;
       group.add(s);
     }
   }
 }
 
-function parsePolygonPointsString(points) {
+function polygonParser(points) {
   var nums = [];
   var reg = /\d+/g;
   var num;
@@ -218,7 +233,25 @@ function fillShape(shape, node, map) {
       // if this is just a string, assign to that state var
       var attributeVal = node.getAttribute(k);
       if (attributeVal) {
-        shape.state[v] = parseFloat(attributeVal);
+        var shouldBeFloat =
+          [
+            'x',
+            'y',
+            'x2',
+            'y2',
+            'width',
+            'height',
+            'rx',
+            'ry',
+            'cx',
+            'cy',
+            'radius',
+            'fontSize',
+            'letterSpacing'
+          ].indexOf(v) > -1;
+        shape.state[v] = shouldBeFloat
+          ? parseFloat(attributeVal)
+          : attributeVal;
       }
     }
   }
