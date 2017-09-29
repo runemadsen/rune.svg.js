@@ -28,11 +28,12 @@ describe('Rune.SVG', function() {
   });
 
   describe('toGroup()', function() {
-    it('should parse the complicated tiger file', function(done) {
+    fit('should parse the complicated tiger file', function(done) {
       var svg = new Rune.Svg(tigerFile);
       svg.load(function(err) {
         var group = svg.toGroup();
-        expect(group.children).toEqual(1);
+        expect(group.children.length).toEqual(1);
+        done();
       });
     });
 

@@ -114,6 +114,7 @@ function domChildrenToGroupChildren(group, childNodes) {
         fill: 'fill'
       });
 
+      // Parse the d path string
       var path = pathParser(child.getAttribute('d'));
       for (var j = 0; j < path.length; j++) {
         var p = path[j];
@@ -123,8 +124,10 @@ function domChildrenToGroupChildren(group, childNodes) {
         var addX = 0;
         var addY = 0;
         if (p.relative && j > 0) {
-          addX = path[j - 1].end.x;
-          addY = path[j - 1].end.y;
+          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+          var lastVec = lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1;
+          addX = lastVec.x;
+          addY = lastVec.y;
         }
 
         if (p.code === 'M' || p.code === 'm') {
@@ -158,7 +161,7 @@ function domChildrenToGroupChildren(group, childNodes) {
         } else if (p.code === 'Z' || p.code === 'z') {
           s.state.anchors.push(new Rune.Anchor().setClose());
         } else {
-          console.error('path command not implemented:', p.code, p);
+          //console.error('path command not implemented:', p.code);
         }
         group.add(s);
       }
@@ -192,6 +195,8 @@ function domChildrenToGroupChildren(group, childNodes) {
       group.add(s);
     } else if (child.tagName == 'g') {
       var s = fillShape(new Rune.Group(), child, {
+        stroke: 'stroke',
+        fill: 'fill',
         transform: ['rotate', 'translate']
       });
       domChildrenToGroupChildren(s, child.childNodes);
@@ -252,8 +257,10 @@ function fillShape(shape, node, map) {
       }
     } else if (k == 'stroke' || k == 'fill') {
       var attributeVal = node.getAttribute(k);
-      if (attributeVal) {
-        shape[k](attributeVal);
+      if (attributeVal && attributeVal !== 'none') {
+        shape.state[k] = new Rune.Color(attributeVal);
+      } else {
+        shape.state[k] = false;
       }
     } else if (typeof v == 'string') {
       // if this is just a string, assign to that state var
