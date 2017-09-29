@@ -37,7 +37,7 @@ Svg.prototype = {
 
     var group = new Rune.Group(x || 0, y || 0);
     var parser = new IsomorphicDOMParser();
-    var el = parser.parseFromString(this.svg);
+    var el = parser.parseFromString(this.svg, 'image/svg+xml');
     var svgel = findChildByTag(el, 'svg');
     var shapes = domChildrenToGroupChildren(group, svgel.childNodes);
     return group;
@@ -157,6 +157,8 @@ function domChildrenToGroupChildren(group, childNodes) {
           );
         } else if (p.code === 'Z' || p.code === 'z') {
           s.state.anchors.push(new Rune.Anchor().setClose());
+        } else {
+          console.error('path command not implemented:', p.code, p);
         }
         group.add(s);
       }

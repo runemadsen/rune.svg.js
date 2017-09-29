@@ -28,7 +28,15 @@ describe('Rune.SVG', function() {
   });
 
   describe('toGroup()', function() {
-    fit('should parse the SVG and return a Rune.Group', function(done) {
+    it('should parse the complicated tiger file', function(done) {
+      var svg = new Rune.Svg(tigerFile);
+      svg.load(function(err) {
+        var group = svg.toGroup();
+        expect(group.children).toEqual(1);
+      });
+    });
+
+    it('should parse the SVG and return a Rune.Group', function(done) {
       var svg = new Rune.Svg(testFile);
       svg.load(function(err) {
         var group = svg.toGroup();
@@ -151,7 +159,7 @@ describe('Rune.SVG', function() {
         expect(image.state.rotation).toEqual(3);
         expect(image.state.rotationX).toEqual(4);
         expect(image.state.rotationY).toEqual(5);
-        expect(image.state.url).toEqual('two.jpg');
+        expect(image.state.url).toEqual('one.jpg');
 
         // Group
         var group = group.children[8];
