@@ -82,6 +82,15 @@ function domChildrenToGroupChildren(group, childNodes) {
   }
 }
 
+function transformValToHash(str) {
+  var b = {};
+  for (var i in (str = str.match(/(\w+\((\-?\d+\.?\d*e?\-?\d*,?\s?)+\))+/g))) {
+    var c = str[i].match(/[\w\.\-]+/g);
+    b[c.shift()] = c;
+  }
+  return b;
+}
+
 // This function loops through the node attributes based on
 // the hash map keys, gets the attributes, and adds them to
 // the shape state based on the hash values.
@@ -94,18 +103,12 @@ function fillShape(shape, node, map) {
     // if this is transform, handle it based on allowed vars in array
     if (k == "transform") {
       var transformVal = node.getAttribute("transform");
-
-      if (v.indexOf("rotation") > -1) {
-        var rotateMatch = transformVal.match(/rotate\((.+)\)/);
-        if (rotateMatch) {
-          var nums = rotateMatch[1].split(" ");
-          shape.state.rotation = parseInt(nums[0]);
-          if (nums[1]) {
-            shape.state.rotationX = parseInt(nums[1]);
-          }
-          if (nums[2]) {
-            shape.state.rotationY = parseInt(nums[2]);
-          }
+      if (transformVal) {
+        var hash = transformValToHash(transformVal);
+        if (v.indexOf("rotation") > -1 && hash.rotate) {
+          if (hash.rotate[0]) shape.state.rotation = parseInt(hash.rotate[0]);
+          if (hash.rotate[1]) shape.state.rotationX = parseInt(hash.rotate[1]);
+          if (hash.rotate[2]) shape.state.rotationY = parseInt(hash.rotate[2]);
         }
       }
     } else if (typeof v == "string") {
