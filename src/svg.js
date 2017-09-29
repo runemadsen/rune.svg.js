@@ -58,6 +58,8 @@ function domChildrenToGroupChildren(group, childNodes) {
         height: "height",
         rx: "rx",
         ry: "ry",
+        stroke: "stroke",
+        fill: "fill",
         transform: ["rotation"]
       });
       group.add(s);
@@ -67,18 +69,33 @@ function domChildrenToGroupChildren(group, childNodes) {
         cy: "y",
         rx: "rx",
         ry: "ry",
+        stroke: "stroke",
+        fill: "fill",
         transform: ["rotation"]
       });
       group.add(s);
+    } else if (child.tagName == "circle") {
+      var s = fillShape(new Rune.Circle(), child, {
+        cx: "x",
+        cy: "y",
+        r: "radius",
+        stroke: "stroke",
+        fill: "fill",
+        transform: ["rotation"]
+      });
+      group.add(s);
+    } else if (child.tagName == "line") {
+      var s = fillShape(new Rune.Line(), child, {
+        x1: "x",
+        y1: "y",
+        x2: "x2",
+        y2: "y2",
+        transform: ["rotation"],
+        stroke: "stroke",
+        fill: "fill"
+      });
+      group.add(s);
     }
-    // if ellipse
-    // if circle
-    // line
-    // path
-    // polygon
-    // group
-    // rectangle
-    // text
   }
 }
 
@@ -106,16 +123,21 @@ function fillShape(shape, node, map) {
       if (transformVal) {
         var hash = transformValToHash(transformVal);
         if (v.indexOf("rotation") > -1 && hash.rotate) {
-          if (hash.rotate[0]) shape.state.rotation = parseInt(hash.rotate[0]);
-          if (hash.rotate[1]) shape.state.rotationX = parseInt(hash.rotate[1]);
-          if (hash.rotate[2]) shape.state.rotationY = parseInt(hash.rotate[2]);
+          if (hash.rotate[0]) shape.state.rotation = parseFloat(hash.rotate[0]);
+          if (hash.rotate[1])
+            shape.state.rotationX = parseFloat(hash.rotate[1]);
+          if (hash.rotate[2])
+            shape.state.rotationY = parseFloat(hash.rotate[2]);
         }
       }
+    } else if (k == "stroke" || k == "fill") {
+      var attributeVal = node.getAttribute(k);
+      shape[k](attributeVal);
     } else if (typeof v == "string") {
       // if this is just a string, assign to that state var
       var attributeVal = node.getAttribute(k);
       if (attributeVal) {
-        shape.state[v] = parseInt(attributeVal);
+        shape.state[v] = parseFloat(attributeVal);
       }
     }
   }
@@ -128,12 +150,12 @@ function parseTransform(transformString) {
 
   if (rotateMatch) {
     var nums = rotateMatch[1].split(" ");
-    attrs.rotation = parseInt(nums[0]);
+    attrs.rotation = parseFloat(nums[0]);
     if (nums[1]) {
-      attrs.rotationX = parseInt(nums[1]);
+      attrs.rotationX = parseFloat(nums[1]);
     }
     if (nums[2]) {
-      attrs.rotationY = parseInt(nums[2]);
+      attrs.rotationY = parseFloat(nums[2]);
     }
   }
   return attrs;
