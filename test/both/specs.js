@@ -153,6 +153,34 @@ describe('Rune.SVG', function() {
         expect(image.state.rotationY).toEqual(5);
         expect(image.state.url).toEqual('two.jpg');
 
+        // Group
+        var group = group.children[8];
+        expect(group.type).toEqual('group');
+        expect(group.state.x).toEqual(1);
+        expect(group.state.y).toEqual(2);
+        expect(group.state.rotation).toEqual(3);
+        expect(group.state.rotationX).toEqual(4);
+        expect(group.state.rotationY).toEqual(5);
+        var child1 = group.children[0];
+        expect(child1.type).toEqual('rectangle');
+        expect(child1.state.x).toEqual(6);
+        expect(child1.state.y).toEqual(7);
+        expect(child1.state.width).toEqual(8);
+        expect(child1.state.height).toEqual(9);
+        var child2 = group.children[1];
+        expect(child2.type).toEqual('group');
+        expect(child2.state.x).toEqual(10);
+        expect(child2.state.y).toEqual(11);
+        expect(child2.state.rotation).toEqual(12);
+        expect(child2.state.rotationX).toEqual(13);
+        expect(child2.state.rotationY).toEqual(14);
+        var child3 = child2.children[0];
+        expect(child3.type).toEqual('rectangle');
+        expect(child3.state.x).toEqual(15);
+        expect(child3.state.y).toEqual(16);
+        expect(child3.state.width).toEqual(17);
+        expect(child3.state.height).toEqual(18);
+
         done();
       });
     });

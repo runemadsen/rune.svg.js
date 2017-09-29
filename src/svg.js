@@ -61,7 +61,7 @@ function domChildrenToGroupChildren(group, childNodes) {
         ry: 'ry',
         stroke: 'stroke',
         fill: 'fill',
-        transform: ['rotation']
+        transform: ['rotate']
       });
       group.add(s);
     } else if (child.tagName == 'ellipse') {
@@ -72,7 +72,7 @@ function domChildrenToGroupChildren(group, childNodes) {
         ry: 'ry',
         stroke: 'stroke',
         fill: 'fill',
-        transform: ['rotation']
+        transform: ['rotate']
       });
       group.add(s);
     } else if (child.tagName == 'circle') {
@@ -82,7 +82,7 @@ function domChildrenToGroupChildren(group, childNodes) {
         r: 'radius',
         stroke: 'stroke',
         fill: 'fill',
-        transform: ['rotation']
+        transform: ['rotate']
       });
       group.add(s);
     } else if (child.tagName == 'line') {
@@ -91,14 +91,14 @@ function domChildrenToGroupChildren(group, childNodes) {
         y1: 'y',
         x2: 'x2',
         y2: 'y2',
-        transform: ['rotation'],
+        transform: ['rotate'],
         stroke: 'stroke',
         fill: 'fill'
       });
       group.add(s);
     } else if (child.tagName == 'polygon') {
       var s = fillShape(new Rune.Polygon(), child, {
-        transform: ['rotation', 'translate'],
+        transform: ['rotate', 'translate'],
         stroke: 'stroke',
         fill: 'fill'
       });
@@ -109,7 +109,7 @@ function domChildrenToGroupChildren(group, childNodes) {
       group.add(s);
     } else if (child.tagName == 'path') {
       var s = fillShape(new Rune.Path(), child, {
-        transform: ['rotation', 'translate'],
+        transform: ['rotate', 'translate'],
         stroke: 'stroke',
         fill: 'fill'
       });
@@ -173,7 +173,7 @@ function domChildrenToGroupChildren(group, childNodes) {
         'font-size': 'fontSize',
         'letter-spacing': 'letterSpacing',
         'text-decoration': 'textDecoration',
-        transform: ['rotation']
+        transform: ['rotate']
       });
       s.state.text = child.childNodes[0].nodeValue;
       group.add(s);
@@ -183,12 +183,23 @@ function domChildrenToGroupChildren(group, childNodes) {
         y: 'y',
         width: 'width',
         height: 'height',
-        transform: ['rotation']
+        transform: ['rotate']
       });
       s.state.url =
         child.getAttribute('xlink:href') || child.getAttribute('href') || null;
       group.add(s);
+    } else if (child.tagName == 'g') {
+      var s = fillShape(new Rune.Group(), child, {
+        transform: ['rotate', 'translate']
+      });
+      domChildrenToGroupChildren(s, child.childNodes);
+      group.add(s);
     }
+  }
+
+  // Make sure they are all changed so they render
+  for (var i = 0; i < group.children; i++) {
+    group.children[i].changed();
   }
 }
 
@@ -225,7 +236,7 @@ function fillShape(shape, node, map) {
       var transformVal = node.getAttribute('transform');
       if (transformVal) {
         var hash = transformValToHash(transformVal);
-        if (v.indexOf('rotation') > -1 && hash.rotate) {
+        if (v.indexOf('rotate') > -1 && hash.rotate) {
           if (hash.rotate[0]) shape.state.rotation = parseFloat(hash.rotate[0]);
           if (hash.rotate[1])
             shape.state.rotationX = parseFloat(hash.rotate[1]);
@@ -239,7 +250,9 @@ function fillShape(shape, node, map) {
       }
     } else if (k == 'stroke' || k == 'fill') {
       var attributeVal = node.getAttribute(k);
-      shape[k](attributeVal);
+      if (attributeVal) {
+        shape[k](attributeVal);
+      }
     } else if (typeof v == 'string') {
       // if this is just a string, assign to that state var
       var attributeVal = node.getAttribute(k);
