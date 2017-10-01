@@ -1,7 +1,6 @@
 var Rune = require('rune.js');
 var isomorphicLoad = require('./load');
 var pathParser = require('d-path-parser');
-var css = require('css');
 
 // The xmldoc package makes it hard to stub the external because
 // it is required as .DOMParser, so we do this instead to make it
@@ -244,12 +243,20 @@ function assignMixins(shape, node, mixins, styles) {
 
     var fill = node.getAttribute('fill') || styles.fill;
     if (fill && fill !== 'none') {
-      shape.state.fill = new Rune.Color(fill);
+      try {
+        shape.state.fill = new Rune.Color(fill);
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     var stroke = node.getAttribute('stroke') || styles.stroke;
     if (stroke && stroke !== 'none') {
-      shape.state.stroke = new Rune.Color(stroke);
+      try {
+        shape.state.stroke = new Rune.Color(stroke);
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     assignVars(shape, node, styleVars, styles);
