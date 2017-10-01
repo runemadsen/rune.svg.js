@@ -38,7 +38,7 @@ describe('Rune.SVG', function() {
       });
     });
 
-    it('should parse the SVG and return a Rune.Group', function(done) {
+    fit('should parse the SVG and return a Rune.Group', function(done) {
       var svg = new Rune.Svg(testFile);
       svg.load(function(err) {
         var group = svg.toGroup();
@@ -57,6 +57,12 @@ describe('Rune.SVG', function() {
         expect(rect.state.rotationY).toEqual(11);
         expect(rect.state.stroke).toEqual(new Rune.Color(255, 0, 0));
         expect(rect.state.fill).toEqual(new Rune.Color(255, 0, 0));
+        expect(rect.state.strokeWidth).toEqual(1.2);
+        expect(rect.state.strokeCap).toEqual('round');
+        expect(rect.state.strokeJoin).toEqual('miter');
+        expect(rect.state.strokeMiterlimit).toEqual(1.2);
+        expect(rect.state.strokeDash).toEqual('1, 2');
+        expect(rect.state.strokeDashOffset).toEqual(1.2);
 
         // Ellipse
         var ellipse = group.children[1];

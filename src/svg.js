@@ -60,7 +60,10 @@ var floats = [
   'cy',
   'radius',
   'fontSize',
-  'letterSpacing'
+  'letterSpacing',
+  'strokeWidth',
+  'strokeMiterlimit',
+  'strokeDashOffset'
 ];
 
 var tagmap = {
@@ -221,6 +224,15 @@ function assignVars(shape, node, vars) {
   }
 }
 
+var styleVars = {
+  'stroke-width': 'strokeWidth',
+  'stroke-linecap': 'strokeCap',
+  'stroke-linejoin': 'strokeJoin',
+  'stroke-miterlimit': 'strokeMiterlimit',
+  'stroke-dasharray': 'strokeDash',
+  'stroke-dashoffset': 'strokeDashOffset'
+};
+
 function assignMixins(shape, node, mixins) {
   if (mixins.indexOf('styles') > -1) {
     shape.state.fill = false;
@@ -234,6 +246,18 @@ function assignMixins(shape, node, mixins) {
     var stroke = node.getAttribute('stroke');
     if (stroke && stroke !== 'none') {
       shape.state.stroke = new Rune.Color(stroke);
+    }
+
+    var keys = Object.keys(styleVars);
+    for (var i = 0; i < keys.length; i++) {
+      var attrVal = node.getAttribute(keys[i]);
+      if (attrVal) {
+        if (floats.indexOf(styleVars[keys[i]]) > -1) {
+          shape.state[styleVars[keys[i]]] = parseFloat(attrVal);
+        } else {
+          shape.state[styleVars[keys[i]]] = attrVal;
+        }
+      }
     }
   }
 }

@@ -117,206 +117,304 @@ Svg.prototype = {
 // Helpers
 // ---------------------------------------------------
 
+var floats = [
+  'x',
+  'y',
+  'x2',
+  'y2',
+  'width',
+  'height',
+  'rx',
+  'ry',
+  'cx',
+  'cy',
+  'radius',
+  'fontSize',
+  'letterSpacing'
+];
+
+var tagmap = {
+  rect: {
+    shape: Rune.Rectangle,
+    vars: {
+      x: 'x',
+      y: 'y',
+      width: 'width',
+      height: 'height',
+      rx: 'rx',
+      ry: 'ry'
+    },
+    transform: ['rotate'],
+    mixins: ['styles']
+  },
+  ellipse: {
+    shape: Rune.Ellipse,
+    vars: {
+      cx: 'x',
+      cy: 'y',
+      rx: 'rx',
+      ry: 'ry'
+    },
+    transform: ['rotate'],
+    mixins: ['styles']
+  },
+  circle: {
+    shape: Rune.Circle,
+    vars: {
+      cx: 'x',
+      cy: 'y',
+      r: 'radius'
+    },
+    transform: ['rotate'],
+    mixins: ['styles']
+  },
+  line: {
+    shape: Rune.Line,
+    vars: {
+      x1: 'x',
+      y1: 'y',
+      x2: 'x2',
+      y2: 'y2'
+    },
+    transform: ['rotate'],
+    mixins: ['styles']
+  },
+  polygon: {
+    shape: Rune.Polygon,
+    transform: ['rotate', 'translate'],
+    mixins: ['styles'],
+    callback: function(node, shape) {
+      var points = polygonParser(node.getAttribute('points'));
+      for (var i = 0; i < points.length; i += 2) {
+        shape.state.vectors.push(new Rune.Vector(points[i], points[i + 1]));
+      }
+      return shape;
+    }
+  },
+  path: {
+    shape: Rune.Path,
+    transform: ['rotate', 'translate'],
+    mixins: ['styles'],
+    callback: function(node, shape) {
+      return fillPath(node, shape);
+    }
+  },
+  text: {
+    shape: Rune.Text,
+    vars: {
+      x: 'x',
+      y: 'y',
+      'text-align': 'textAlign',
+      'font-family': 'fontFamily',
+      'font-style': 'fontStyle',
+      'font-weight': 'fontWeight',
+      'font-size': 'fontSize',
+      'letter-spacing': 'letterSpacing',
+      'text-decoration': 'textDecoration'
+    },
+    transform: ['rotate'],
+    mixins: ['styles'],
+    callback: function(node, shape) {
+      shape.state.text = node.childNodes[0].nodeValue;
+      return shape;
+    }
+  },
+  image: {
+    shape: Rune.Image,
+    vars: {
+      x: 'x',
+      y: 'y',
+      width: 'width',
+      height: 'height'
+    },
+    transform: ['rotate'],
+    callback: function(node, shape) {
+      shape.state.url =
+        node.getAttribute('xlink:href') || node.getAttribute('href') || null;
+      return shape;
+    }
+  },
+  g: {
+    shape: Rune.Group,
+    transform: ['rotate', 'translate'],
+    mixins: ['styles'],
+    callback: function(node, shape) {
+      domChildrenToGroupChildren(shape, node.childNodes);
+      return shape;
+    }
+  }
+};
+var tagkeys = Object.keys(tagmap);
+
 function domChildrenToGroupChildren(group, childNodes) {
   for (var i = 0; i < childNodes.length; i++) {
     var child = childNodes[i];
+    if (child.tagName && tagkeys.indexOf(child.tagName > -1)) {
+      var mapitem = tagmap[child.tagName];
+      var shape = new mapitem.shape();
 
-    if (child.tagName == 'rect') {
-      var s = fillShape(new Rune.Rectangle(), child, {
-        x: 'x',
-        y: 'y',
-        width: 'width',
-        height: 'height',
-        rx: 'rx',
-        ry: 'ry',
-        stroke: 'stroke',
-        fill: 'fill',
-        transform: ['rotate']
-      });
-      group.add(s);
-    } else if (child.tagName == 'ellipse') {
-      var s = fillShape(new Rune.Ellipse(), child, {
-        cx: 'x',
-        cy: 'y',
-        rx: 'rx',
-        ry: 'ry',
-        stroke: 'stroke',
-        fill: 'fill',
-        transform: ['rotate']
-      });
-      group.add(s);
-    } else if (child.tagName == 'circle') {
-      var s = fillShape(new Rune.Circle(), child, {
-        cx: 'x',
-        cy: 'y',
-        r: 'radius',
-        stroke: 'stroke',
-        fill: 'fill',
-        transform: ['rotate']
-      });
-      group.add(s);
-    } else if (child.tagName == 'line') {
-      var s = fillShape(new Rune.Line(), child, {
-        x1: 'x',
-        y1: 'y',
-        x2: 'x2',
-        y2: 'y2',
-        transform: ['rotate'],
-        stroke: 'stroke',
-        fill: 'fill'
-      });
-      group.add(s);
-    } else if (child.tagName == 'polygon') {
-      var s = fillShape(new Rune.Polygon(), child, {
-        transform: ['rotate', 'translate'],
-        stroke: 'stroke',
-        fill: 'fill'
-      });
-      var points = polygonParser(child.getAttribute('points'));
-      for (var j = 0; j < points.length; j += 2) {
-        s.state.vectors.push(new Rune.Vector(points[j], points[j + 1]));
+      if (mapitem.vars) {
+        assignVars(shape, child, mapitem.vars);
       }
-      group.add(s);
-    } else if (child.tagName == 'path') {
-      var s = fillShape(new Rune.Path(), child, {
-        transform: ['rotate', 'translate'],
-        stroke: 'stroke',
-        fill: 'fill'
-      });
 
-      // Parse the d path string
-      var path = pathParser(child.getAttribute('d'));
-      for (var j = 0; j < path.length; j++) {
-        var p = path[j];
-
-        // relative coords will be converted to absolute, as rune.js
-        // does not support relative output in path
-        var addX = 0;
-        var addY = 0;
-        if (p.relative && j > 0) {
-          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
-          var lastVec = lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1;
-          addX = lastVec.x;
-          addY = lastVec.y;
-        }
-
-        if (p.code === 'M' || p.code === 'm') {
-          s.state.anchors.push(
-            new Rune.Anchor().setMove(p.end.x + addX, p.end.y + addY)
-          );
-        } else if (p.code === 'L' || p.code === 'l') {
-          s.state.anchors.push(
-            new Rune.Anchor().setLine(p.end.x + addX, p.end.y + addY)
-          );
-        } else if (p.code === 'Q' || p.code == 'q') {
-          s.state.anchors.push(
-            new Rune.Anchor().setCurve(
-              p.cp.x + addX,
-              p.cp.y + addY,
-              p.end.x + addX,
-              p.end.y + addY
-            )
-          );
-        } else if (p.code === 'C' || p.code === 'c') {
-          s.state.anchors.push(
-            new Rune.Anchor().setCurve(
-              p.cp1.x + addX,
-              p.cp1.y + addY,
-              p.cp2.x + addX,
-              p.cp2.y + addY,
-              p.end.x + addX,
-              p.end.y + addY
-            )
-          );
-        } else if (p.code === 'S' || p.code === 's') {
-          // Convert shorthand to full cubic bezier.
-          // If last anchor is cubic, mirror cp2 to end vector
-          // If not, just use last end position
-          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
-          var cp1;
-          if (lastAnchor.command == 'cubic') {
-            cp1 = lastAnchor.vec3.sub(lastAnchor.vec2).add(lastAnchor.vec3);
-          } else {
-            cp1 = lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1;
-          }
-          s.state.anchors.push(
-            new Rune.Anchor().setCurve(
-              cp1.x + addX,
-              cp1.y + addY,
-              p.cp.x + addX,
-              p.cp.y + addY,
-              p.end.x + addX,
-              p.end.y + addY
-            )
-          );
-        } else if (p.code === 'V' || p.code === 'v') {
-          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
-          s.state.anchors.push(
-            new Rune.Anchor().setLine(
-              (lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1).x,
-              p.value + addY
-            )
-          );
-        } else if (p.code === 'H' || p.code === 'h') {
-          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
-          s.state.anchors.push(
-            new Rune.Anchor().setLine(
-              p.value + addX,
-              (lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1).y
-            )
-          );
-        } else if (p.code === 'Z' || p.code === 'z') {
-          s.state.anchors.push(new Rune.Anchor().setClose());
-        } else {
-          console.error('path command not implemented in parser:', p.code);
-        }
-        group.add(s);
+      if (mapitem.transform) {
+        assignTransform(shape, child, mapitem.transform);
       }
-    } else if (child.tagName == 'text') {
-      var s = fillShape(new Rune.Text(), child, {
-        x: 'x',
-        y: 'y',
-        stroke: 'stroke',
-        fill: 'fill',
-        'text-align': 'textAlign',
-        'font-family': 'fontFamily',
-        'font-style': 'fontStyle',
-        'font-weight': 'fontWeight',
-        'font-size': 'fontSize',
-        'letter-spacing': 'letterSpacing',
-        'text-decoration': 'textDecoration',
-        transform: ['rotate']
-      });
-      s.state.text = child.childNodes[0].nodeValue;
-      group.add(s);
-    } else if (child.tagName == 'image') {
-      var s = fillShape(new Rune.Image(), child, {
-        x: 'x',
-        y: 'y',
-        width: 'width',
-        height: 'height',
-        transform: ['rotate']
-      });
-      s.state.url =
-        child.getAttribute('xlink:href') || child.getAttribute('href') || null;
-      group.add(s);
-    } else if (child.tagName == 'g') {
-      var s = fillShape(new Rune.Group(), child, {
-        stroke: 'stroke',
-        fill: 'fill',
-        transform: ['rotate', 'translate']
-      });
-      domChildrenToGroupChildren(s, child.childNodes);
-      group.add(s);
+
+      if (mapitem.mixins) {
+        assignMixins(shape, child, mapitem.mixins);
+      }
+
+      if (mapitem.callback) {
+        mapitem.callback(child, shape);
+      }
+
+      group.add(shape);
+      shape.changed();
     } else if (child.tagName) {
       console.error('Tag not implemented in parser:', child.tagName);
     }
   }
+}
 
-  // Make sure they are all changed so they render
-  for (var i = 0; i < group.children; i++) {
-    group.children[i].changed();
+function assignVars(shape, node, vars) {
+  var keys = Object.keys(vars);
+  for (var i = 0; i < keys.length; i++) {
+    var attrVal = node.getAttribute(keys[i]);
+    if (attrVal) {
+      if (floats.indexOf(vars[keys[i]]) > -1) {
+        shape.state[vars[keys[i]]] = parseFloat(attrVal);
+      } else {
+        shape.state[vars[keys[i]]] = attrVal;
+      }
+    }
   }
+}
+
+function assignMixins(shape, node, mixins) {
+  if (mixins.indexOf('styles') > -1) {
+    shape.state.fill = false;
+    shape.state.stroke = false;
+
+    var fill = node.getAttribute('fill');
+    if (fill && fill !== 'none') {
+      shape.state.fill = new Rune.Color(fill);
+    }
+
+    var stroke = node.getAttribute('stroke');
+    if (stroke && stroke !== 'none') {
+      shape.state.stroke = new Rune.Color(stroke);
+    }
+  }
+}
+
+function assignTransform(shape, node, transform) {
+  var transformVal = node.getAttribute('transform');
+  if (transformVal) {
+    var hash = transformValToHash(transformVal);
+    if (transform.indexOf('rotate') > -1 && hash.rotate) {
+      if (hash.rotate[0]) shape.state.rotation = parseFloat(hash.rotate[0]);
+      if (hash.rotate[1]) shape.state.rotationX = parseFloat(hash.rotate[1]);
+      if (hash.rotate[2]) shape.state.rotationY = parseFloat(hash.rotate[2]);
+    }
+    if (transform.indexOf('translate') > -1 && hash.translate) {
+      if (hash.translate[0]) shape.state.x = parseFloat(hash.translate[0]);
+      if (hash.translate[1]) shape.state.y = parseFloat(hash.translate[1]);
+    }
+  }
+}
+
+function fillPath(node, shape) {
+  var dObject = pathParser(node.getAttribute('d'));
+  var s = shape;
+
+  for (var j = 0; j < dObject.length; j++) {
+    var p = dObject[j];
+
+    // relative coords will be converted to absolute, as rune.js
+    // does not support relative output in path
+    var addX = 0;
+    var addY = 0;
+    if (p.relative && j > 0) {
+      var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+      var lastVec = lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1;
+      addX = lastVec.x;
+      addY = lastVec.y;
+    }
+
+    if (p.code === 'M' || p.code === 'm') {
+      s.state.anchors.push(
+        new Rune.Anchor().setMove(p.end.x + addX, p.end.y + addY)
+      );
+    } else if (p.code === 'L' || p.code === 'l') {
+      s.state.anchors.push(
+        new Rune.Anchor().setLine(p.end.x + addX, p.end.y + addY)
+      );
+    } else if (p.code === 'Q' || p.code == 'q') {
+      s.state.anchors.push(
+        new Rune.Anchor().setCurve(
+          p.cp.x + addX,
+          p.cp.y + addY,
+          p.end.x + addX,
+          p.end.y + addY
+        )
+      );
+    } else if (p.code === 'C' || p.code === 'c') {
+      s.state.anchors.push(
+        new Rune.Anchor().setCurve(
+          p.cp1.x + addX,
+          p.cp1.y + addY,
+          p.cp2.x + addX,
+          p.cp2.y + addY,
+          p.end.x + addX,
+          p.end.y + addY
+        )
+      );
+    } else if (p.code === 'S' || p.code === 's') {
+      // Convert shorthand to full cubic bezier.
+      // If last anchor is cubic, mirror cp2 to end vector
+      // If not, just use last end position
+      var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+      var cp1;
+      if (lastAnchor.command == 'cubic') {
+        cp1 = lastAnchor.vec3.sub(lastAnchor.vec2).add(lastAnchor.vec3);
+      } else {
+        cp1 = lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1;
+      }
+      s.state.anchors.push(
+        new Rune.Anchor().setCurve(
+          cp1.x,
+          cp1.y,
+          p.cp.x + addX,
+          p.cp.y + addY,
+          p.end.x + addX,
+          p.end.y + addY
+        )
+      );
+    } else if (p.code === 'V' || p.code === 'v') {
+      var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+      s.state.anchors.push(
+        new Rune.Anchor().setLine(
+          (lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1).x,
+          p.value + addY
+        )
+      );
+    } else if (p.code === 'H' || p.code === 'h') {
+      var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+      s.state.anchors.push(
+        new Rune.Anchor().setLine(
+          p.value + addX,
+          (lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1).y
+        )
+      );
+    } else if (p.code === 'Z' || p.code === 'z') {
+      s.state.anchors.push(new Rune.Anchor().setClose());
+    } else {
+      console.error('path command not implemented in parser:', p.code);
+    }
+  }
+
+  return shape;
 }
 
 function polygonParser(points) {
@@ -336,69 +434,6 @@ function transformValToHash(str) {
     b[c.shift()] = c;
   }
   return b;
-}
-
-// This function loops through the node attributes based on
-// the hash map keys, gets the attributes, and adds them to
-// the shape state based on the hash values.
-function fillShape(shape, node, map) {
-  var keys = Object.keys(map);
-  for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    var v = map[k];
-
-    // if this is transform, handle it based on allowed vars in array
-    if (k == 'transform') {
-      var transformVal = node.getAttribute('transform');
-      if (transformVal) {
-        var hash = transformValToHash(transformVal);
-        if (v.indexOf('rotate') > -1 && hash.rotate) {
-          if (hash.rotate[0]) shape.state.rotation = parseFloat(hash.rotate[0]);
-          if (hash.rotate[1])
-            shape.state.rotationX = parseFloat(hash.rotate[1]);
-          if (hash.rotate[2])
-            shape.state.rotationY = parseFloat(hash.rotate[2]);
-        }
-        if (v.indexOf('translate') > -1 && hash.translate) {
-          if (hash.translate[0]) shape.state.x = parseFloat(hash.translate[0]);
-          if (hash.translate[1]) shape.state.y = parseFloat(hash.translate[1]);
-        }
-      }
-    } else if (k == 'stroke' || k == 'fill') {
-      var attributeVal = node.getAttribute(k);
-      if (attributeVal && attributeVal !== 'none') {
-        shape.state[k] = new Rune.Color(attributeVal);
-      } else {
-        shape.state[k] = false;
-      }
-    } else if (typeof v == 'string') {
-      // if this is just a string, assign to that state var
-      var attributeVal = node.getAttribute(k);
-      if (attributeVal) {
-        var shouldBeFloat =
-          [
-            'x',
-            'y',
-            'x2',
-            'y2',
-            'width',
-            'height',
-            'rx',
-            'ry',
-            'cx',
-            'cy',
-            'radius',
-            'fontSize',
-            'letterSpacing'
-          ].indexOf(v) > -1;
-        shape.state[v] = shouldBeFloat
-          ? parseFloat(attributeVal)
-          : attributeVal;
-      }
-    }
-  }
-  shape.changed();
-  return shape;
 }
 
 function parseTransform(transformString) {
