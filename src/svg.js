@@ -47,6 +47,8 @@ Svg.prototype = {
 // Helpers
 // ---------------------------------------------------
 
+// Any attribute with this name will be converted
+// from string to float.
 var floats = [
   'x',
   'y',
@@ -248,17 +250,7 @@ function assignMixins(shape, node, mixins) {
       shape.state.stroke = new Rune.Color(stroke);
     }
 
-    var keys = Object.keys(styleVars);
-    for (var i = 0; i < keys.length; i++) {
-      var attrVal = node.getAttribute(keys[i]);
-      if (attrVal) {
-        if (floats.indexOf(styleVars[keys[i]]) > -1) {
-          shape.state[styleVars[keys[i]]] = parseFloat(attrVal);
-        } else {
-          shape.state[styleVars[keys[i]]] = attrVal;
-        }
-      }
-    }
+    assignVars(shape, node, styleVars);
   }
 }
 
@@ -388,37 +380,6 @@ function transformValToHash(str) {
     b[c.shift()] = c;
   }
   return b;
-}
-
-function parseTransform(transformString) {
-  var attrs = {};
-
-  if (rotateMatch) {
-    var nums = rotateMatch[1].split(' ');
-    attrs.rotation = parseFloat(nums[0]);
-    if (nums[1]) {
-      attrs.rotationX = parseFloat(nums[1]);
-    }
-    if (nums[2]) {
-      attrs.rotationY = parseFloat(nums[2]);
-    }
-  }
-  return attrs;
-}
-
-function getAtttributes(node, keys) {
-  var attrs = {};
-  for (var i = 0; i < keys.length; i++) {
-    var val = node.getAttribute(keys[i]);
-    if (val) {
-      if (keys[i] == 'transform') {
-        Object.assign(attrs, parseTransform(val));
-      } else {
-        attrs[keys[i]] = val;
-      }
-    }
-  }
-  return attrs;
 }
 
 function findChildByTag(node, tagName) {
