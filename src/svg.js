@@ -179,6 +179,22 @@ function domChildrenToGroupChildren(group, childNodes) {
               p.end.y + addY
             )
           );
+        } else if (p.code === 'V' || p.code === 'v') {
+          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+          s.state.anchors.push(
+            new Rune.Anchor().setLine(
+              (lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1).x,
+              p.value + addY
+            )
+          );
+        } else if (p.code === 'H' || p.code === 'h') {
+          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+          s.state.anchors.push(
+            new Rune.Anchor().setLine(
+              p.value + addX,
+              (lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1).y
+            )
+          );
         } else if (p.code === 'Z' || p.code === 'z') {
           s.state.anchors.push(new Rune.Anchor().setClose());
         } else {

@@ -16,6 +16,10 @@
     c 5 6, 7 8, 9 10
     S 5 6, 7 8
     s 5 6, 7 8
+    H 5
+    h 5
+    V 5
+    v 5
     Z"
     transform="rotate(1 2 3) translate(4 5)" stroke="#FF0000" fill="rgb(255, 0, 0)" />
   <text x="1" y="2" transform="rotate(3 4 5) translate(6 7)" stroke="#FF0000" fill="rgb(255, 0, 0)" text-align="left" font-family="Helvetica" font-style="italic" font-weight="bold" font-size="12" letter-spacing="0.5" text-decoration="none">Rune</text>

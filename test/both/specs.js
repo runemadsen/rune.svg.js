@@ -122,16 +122,20 @@ describe('Rune.SVG', function() {
         expect(path.state.stroke).toEqual(new Rune.Color(255, 0, 0));
         expect(path.state.fill).toEqual(new Rune.Color(255, 0, 0));
         expect(path.state.anchors).toEqual([
-          new Rune.Anchor().setMove(1, 2),
-          new Rune.Anchor().setMove(2, 4), // relative
-          new Rune.Anchor().setLine(3, 4),
-          new Rune.Anchor().setLine(6, 8), // relative
-          new Rune.Anchor().setCurve(5, 6, 7, 8),
-          new Rune.Anchor().setCurve(12, 14, 14, 16), // relative
-          new Rune.Anchor().setCurve(5, 6, 7, 8, 9, 10),
-          new Rune.Anchor().setCurve(14, 16, 16, 18, 18, 20), // relative
-          new Rune.Anchor().setCurve(20, 22, 5, 6, 7, 8), // S converted to C
-          new Rune.Anchor().setCurve(16, 18, 12, 14, 14, 16), // relative s converted to C
+          new Rune.Anchor().setMove(1, 2), // M
+          new Rune.Anchor().setMove(2, 4), // m
+          new Rune.Anchor().setLine(3, 4), // L
+          new Rune.Anchor().setLine(6, 8), // l
+          new Rune.Anchor().setCurve(5, 6, 7, 8), // Q
+          new Rune.Anchor().setCurve(12, 14, 14, 16), // q
+          new Rune.Anchor().setCurve(5, 6, 7, 8, 9, 10), // C
+          new Rune.Anchor().setCurve(14, 16, 16, 18, 18, 20), // c
+          new Rune.Anchor().setCurve(20, 22, 5, 6, 7, 8), // S -> cubic
+          new Rune.Anchor().setCurve(16, 18, 12, 14, 14, 16), // s -> cubic
+          new Rune.Anchor().setLine(5, 16), // H -> line
+          new Rune.Anchor().setLine(10, 16), // h -> line
+          new Rune.Anchor().setLine(10, 5), // V -> line
+          new Rune.Anchor().setLine(10, 10), // v -> line
           new Rune.Anchor().setClose()
         ]);
 
