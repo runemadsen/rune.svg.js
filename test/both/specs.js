@@ -28,7 +28,7 @@ describe('Rune.SVG', function() {
   });
 
   describe('toGroup()', function() {
-    fit('should parse the complicated tiger file', function(done) {
+    it('should parse the complicated tiger file', function(done) {
       var svg = new Rune.Svg(tigerFile);
       svg.load(function(err) {
         var group = svg.toGroup();
@@ -37,7 +37,7 @@ describe('Rune.SVG', function() {
       });
     });
 
-    it('should parse the SVG and return a Rune.Group', function(done) {
+    fit('should parse the SVG and return a Rune.Group', function(done) {
       var svg = new Rune.Svg(testFile);
       svg.load(function(err) {
         var group = svg.toGroup();
@@ -130,6 +130,8 @@ describe('Rune.SVG', function() {
           new Rune.Anchor().setCurve(12, 14, 14, 16), // relative
           new Rune.Anchor().setCurve(5, 6, 7, 8, 9, 10),
           new Rune.Anchor().setCurve(14, 16, 16, 18, 18, 20), // relative
+          new Rune.Anchor().setCurve(20, 22, 5, 6, 7, 8), // S converted to C
+          new Rune.Anchor().setCurve(16, 18, 12, 14, 14, 16), // relative s converted to C
           new Rune.Anchor().setClose()
         ]);
 

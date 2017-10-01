@@ -158,10 +158,31 @@ function domChildrenToGroupChildren(group, childNodes) {
               p.end.y + addY
             )
           );
+        } else if (p.code === 'S' || p.code === 's') {
+          // Convert shorthand to full cubic bezier.
+          // If last anchor is cubic, mirror cp2 to end vector
+          // If not, just use last end position
+          var lastAnchor = s.state.anchors[s.state.anchors.length - 1];
+          var cp1;
+          if (lastAnchor.command == 'cubic') {
+            cp1 = lastAnchor.vec3.sub(lastAnchor.vec2).add(lastAnchor.vec3);
+          } else {
+            cp1 = lastAnchor.vec3 || lastAnchor.vec2 || lastAnchor.vec1;
+          }
+          s.state.anchors.push(
+            new Rune.Anchor().setCurve(
+              cp1.x + addX,
+              cp1.y + addY,
+              p.cp.x + addX,
+              p.cp.y + addY,
+              p.end.x + addX,
+              p.end.y + addY
+            )
+          );
         } else if (p.code === 'Z' || p.code === 'z') {
           s.state.anchors.push(new Rune.Anchor().setClose());
         } else {
-          //console.error('path command not implemented:', p.code);
+          console.error('path command not implemented in parser:', p.code);
         }
         group.add(s);
       }
@@ -201,6 +222,8 @@ function domChildrenToGroupChildren(group, childNodes) {
       });
       domChildrenToGroupChildren(s, child.childNodes);
       group.add(s);
+    } else if (child.tagName) {
+      console.error('Tag not implemented in parser:', child.tagName);
     }
   }
 
