@@ -171,8 +171,8 @@ function domChildrenToGroupChildren(group, childNodes) {
           }
           s.state.anchors.push(
             new Rune.Anchor().setCurve(
-              cp1.x + addX,
-              cp1.y + addY,
+              cp1.x,
+              cp1.y,
               p.cp.x + addX,
               p.cp.y + addY,
               p.end.x + addX,

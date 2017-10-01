@@ -33,11 +33,12 @@ describe('Rune.SVG', function() {
       svg.load(function(err) {
         var group = svg.toGroup();
         expect(group.children.length).toEqual(1);
+        expect(group.children[0].children.length).toEqual(240);
         done();
       });
     });
 
-    fit('should parse the SVG and return a Rune.Group', function(done) {
+    it('should parse the SVG and return a Rune.Group', function(done) {
       var svg = new Rune.Svg(testFile);
       svg.load(function(err) {
         var group = svg.toGroup();
@@ -131,7 +132,7 @@ describe('Rune.SVG', function() {
           new Rune.Anchor().setCurve(5, 6, 7, 8, 9, 10), // C
           new Rune.Anchor().setCurve(14, 16, 16, 18, 18, 20), // c
           new Rune.Anchor().setCurve(20, 22, 5, 6, 7, 8), // S -> cubic
-          new Rune.Anchor().setCurve(16, 18, 12, 14, 14, 16), // s -> cubic
+          new Rune.Anchor().setCurve(9, 10, 12, 14, 14, 16), // s -> cubic
           new Rune.Anchor().setLine(5, 16), // H -> line
           new Rune.Anchor().setLine(10, 16), // h -> line
           new Rune.Anchor().setLine(10, 5), // V -> line
