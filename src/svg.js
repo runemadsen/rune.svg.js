@@ -1,6 +1,7 @@
 var Rune = require('rune.js');
 var isomorphicLoad = require('./load');
 var pathParser = require('d-path-parser');
+var css = require('css');
 
 // The xmldoc package makes it hard to stub the external because
 // it is required as .DOMParser, so we do this instead to make it
@@ -184,12 +185,13 @@ var tagkeys = Object.keys(tagmap);
 function domChildrenToGroupChildren(group, childNodes) {
   for (var i = 0; i < childNodes.length; i++) {
     var child = childNodes[i];
-    if (child.tagName && tagkeys.indexOf(child.tagName > -1)) {
+    if (child.tagName && tagkeys.indexOf(child.tagName) > -1) {
       var mapitem = tagmap[child.tagName];
       var shape = new mapitem.shape();
+      var styles = inlineCssToObject(child);
 
       if (mapitem.vars) {
-        assignVars(shape, child, mapitem.vars);
+        assignVars(shape, child, mapitem.vars, styles);
       }
 
       if (mapitem.transform) {
@@ -197,7 +199,7 @@ function domChildrenToGroupChildren(group, childNodes) {
       }
 
       if (mapitem.mixins) {
-        assignMixins(shape, child, mapitem.mixins);
+        assignMixins(shape, child, mapitem.mixins, styles);
       }
 
       if (mapitem.callback) {
@@ -212,10 +214,10 @@ function domChildrenToGroupChildren(group, childNodes) {
   }
 }
 
-function assignVars(shape, node, vars) {
+function assignVars(shape, node, vars, styles) {
   var keys = Object.keys(vars);
   for (var i = 0; i < keys.length; i++) {
-    var attrVal = node.getAttribute(keys[i]);
+    var attrVal = node.getAttribute(keys[i]) || styles[keys[i]];
     if (attrVal) {
       if (floats.indexOf(vars[keys[i]]) > -1) {
         shape.state[vars[keys[i]]] = parseFloat(attrVal);
@@ -235,22 +237,22 @@ var styleVars = {
   'stroke-dashoffset': 'strokeDashOffset'
 };
 
-function assignMixins(shape, node, mixins) {
+function assignMixins(shape, node, mixins, styles) {
   if (mixins.indexOf('styles') > -1) {
     shape.state.fill = false;
     shape.state.stroke = false;
 
-    var fill = node.getAttribute('fill');
+    var fill = node.getAttribute('fill') || styles.fill;
     if (fill && fill !== 'none') {
       shape.state.fill = new Rune.Color(fill);
     }
 
-    var stroke = node.getAttribute('stroke');
+    var stroke = node.getAttribute('stroke') || styles.stroke;
     if (stroke && stroke !== 'none') {
       shape.state.stroke = new Rune.Color(stroke);
     }
 
-    assignVars(shape, node, styleVars);
+    assignVars(shape, node, styleVars, styles);
   }
 }
 
@@ -389,6 +391,19 @@ function findChildByTag(node, tagName) {
     }
   }
   return null;
+}
+
+function inlineCssToObject(node) {
+  var styles = {};
+  var str = node.getAttribute('style');
+  if (str) {
+    var pieces = str.split(';');
+    for (var i = 0; i < pieces.length; i++) {
+      var rule = pieces[i].split(':');
+      styles[rule[0].trim()] = rule[1].trim();
+    }
+  }
+  return styles;
 }
 
 module.exports = Svg;

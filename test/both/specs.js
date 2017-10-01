@@ -74,8 +74,15 @@ describe('Rune.SVG', function() {
         expect(ellipse.state.rotation).toEqual(7);
         expect(ellipse.state.rotationX).toEqual(8);
         expect(ellipse.state.rotationY).toEqual(9);
+        // From styles attribute
         expect(ellipse.state.stroke).toEqual(new Rune.Color(255, 0, 0));
         expect(ellipse.state.fill).toEqual(new Rune.Color(255, 0, 0));
+        expect(ellipse.state.strokeWidth).toEqual(1.2);
+        expect(ellipse.state.strokeCap).toEqual('round');
+        expect(ellipse.state.strokeJoin).toEqual('miter');
+        expect(ellipse.state.strokeMiterlimit).toEqual(1.2);
+        expect(ellipse.state.strokeDash).toEqual('1, 2');
+        expect(ellipse.state.strokeDashOffset).toEqual(1.2);
 
         // Circle
         var circle = group.children[2];
