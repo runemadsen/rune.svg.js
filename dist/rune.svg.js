@@ -308,25 +308,34 @@ var styleVars = {
 
 function assignMixins(shape, node, mixins, styles) {
   if (mixins.indexOf('styles') > -1) {
-    shape.state.fill = false;
-    shape.state.stroke = false;
-
     var fill = node.getAttribute('fill') || styles.fill;
-    if (fill && fill !== 'none') {
-      try {
-        shape.state.fill = new Rune.Color(fill);
-      } catch (e) {
-        console.error(e);
+    if (fill) {
+      if (fill === 'none') {
+        shape.state.fill = fill;
+      } else {
+        try {
+          shape.state.fill = new Rune.Color(fill);
+        } catch (e) {
+          console.error(e);
+        }
       }
+    } else {
+      shape.state.fill = false;
     }
 
     var stroke = node.getAttribute('stroke') || styles.stroke;
-    if (stroke && stroke !== 'none') {
-      try {
-        shape.state.stroke = new Rune.Color(stroke);
-      } catch (e) {
-        console.error(e);
+    if (stroke) {
+      if (stroke === 'none') {
+        shape.state.stroke = stroke;
+      } else {
+        try {
+          shape.state.stroke = new Rune.Color(stroke);
+        } catch (e) {
+          console.error(e);
+        }
       }
+    } else {
+      shape.state.stroke = false;
     }
 
     assignVars(shape, node, styleVars, styles);
