@@ -38,7 +38,7 @@ describe('Rune.SVG', function() {
       });
     });
 
-    fit('should parse the SVG and return a Rune.Group', function(done) {
+    it('should parse the SVG and return a Rune.Group', function(done) {
       var svg = new Rune.Svg(testFile);
       svg.load(function(err) {
         var group = svg.toGroup();
