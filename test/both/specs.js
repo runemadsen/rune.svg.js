@@ -93,8 +93,8 @@ describe('Rune.SVG', function() {
         expect(circle.state.rotation).toEqual(4);
         expect(circle.state.rotationX).toEqual(5);
         expect(circle.state.rotationY).toEqual(6);
-        expect(circle.state.stroke).toEqual(new Rune.Color(255, 0, 0));
-        expect(circle.state.fill).toEqual(new Rune.Color(255, 0, 0));
+        expect(circle.state.stroke).toEqual(false);
+        expect(circle.state.fill).toEqual(false);
 
         // Line
         var line = group.children[3];
@@ -106,8 +106,8 @@ describe('Rune.SVG', function() {
         expect(line.state.rotation).toEqual(5);
         expect(line.state.rotationX).toEqual(6);
         expect(line.state.rotationY).toEqual(7);
-        expect(line.state.stroke).toEqual(new Rune.Color(255, 0, 0));
-        expect(line.state.fill).toEqual(new Rune.Color(255, 0, 0));
+        expect(line.state.stroke).toEqual('none');
+        expect(line.state.fill).toEqual('none');
 
         // Polygon
         var polygon = group.children[4];
