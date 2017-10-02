@@ -1,4 +1,4 @@
-# Rune.Font.js
+# Rune.Svg.js
 
 A plugin that parses SVG files (or strings) and converts them Rune objects.
 
